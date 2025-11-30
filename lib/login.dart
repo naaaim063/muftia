@@ -7,7 +7,7 @@ class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
   void _login(BuildContext context, String email, String password) {
-    if (!email.endsWith("@yahoo.com")) {
+    if (!email.endsWith("@gmail.com")) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text("Email salah")));
