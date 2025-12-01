@@ -2,21 +2,31 @@ import 'package:flutter/material.dart';
 import 'beranda.dart';
 import 'reset.dart';
 import 'sign_up.dart';
+import 'auth_local_service.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
-  void _login(BuildContext context, String email, String password) {
-    if (!email.endsWith("@gmail.com")) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Email salah")));
-    } else if (password != "12345") {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Password salah!")));
+  void _login(BuildContext context, String email, String password) async {
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Email dan password harus diisi!")),
+      );
+      return;
+    }
+
+    // Cek login pakai local storage
+    final success = await AuthLocalService.login(email, password);
+  
+    if (success) {
+      Navigator.pushReplacement(
+        context, 
+        MaterialPageRoute(builder: (context) => const Beranda())
+      );
     } else {
-      Navigator.push(context, MaterialPageRoute(builder: (_) => Beranda()));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Email atau password salah!")),
+      );
     }
   }
 

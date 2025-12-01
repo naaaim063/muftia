@@ -1,128 +1,154 @@
 import 'package:flutter/material.dart';
+import 'auth_local_service.dart';
+import 'login.dart';
 
-class ResetPasswordPage extends StatelessWidget {
+class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController newPasswordController = TextEditingController();
-    final TextEditingController confirmPasswordController =
-        TextEditingController();
+  State<ResetPasswordPage> createState() => _ResetPasswordPageState();
+}
 
+class _ResetPasswordPageState extends State<ResetPasswordPage> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController newPasswordController = TextEditingController();
+  final TextEditingController confirmController = TextEditingController();
+  bool _isLoading = false;
+
+  Future<void> _resetPassword() async {
+    setState(() => _isLoading = true);
+    
+    final email = emailController.text.trim();
+    final newPass = newPasswordController.text.trim();
+    final confirm = confirmController.text.trim();
+
+    if (email.isEmpty || newPass.isEmpty || confirm.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Semua field harus diisi!")),
+      );
+      setState(() => _isLoading = false);
+      return;
+    }
+    
+    if (newPass.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Password baru minimal 6 karakter!")),
+      );
+      setState(() => _isLoading = false);
+      return;
+    }
+    
+    if (newPass != confirm) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Konfirmasi password tidak cocok!")),
+      );
+      setState(() => _isLoading = false);
+      return;
+    }
+
+    final success = await AuthLocalService.resetPassword(email, newPass);
+    setState(() => _isLoading = false);
+    
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Password berhasil direset!")),
+      );
+      Navigator.pushReplacement(
+        context, 
+        MaterialPageRoute(builder: (context) => const LoginPage())
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Email tidak ditemukan!")),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0XFF161618),
+      backgroundColor: const Color(0XFF161618),
       appBar: AppBar(
-        title: const Text(
-          "Reset Password",
-          style: TextStyle(
-            color: Colors.white,
-            fontFamily: "roboto",
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
-        ),
-        backgroundColor: Color(0XFF161618),
+        title: const Text("Reset Password", style: TextStyle(color: Colors.white)),
+        backgroundColor: const Color(0XFF161618),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
       ),
-
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Image(
-                image: AssetImage('asset/images/Taskuy.jpeg'),
-                height: 250,
-                width: 250,
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset('asset/images/Taskuy.jpeg', height: 200, width: 200),
+            const SizedBox(height: 40),
+            const Text(
+              "Reset Password",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
               ),
-              SizedBox(height: 30),
-
-              Text(
-                "Reset Kata Sandi",
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
+            ),
+            const SizedBox(height: 30),
+            TextField(
+              controller: emailController,
+              keyboardType: TextInputType.emailAddress,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                labelText: "Email",
+                filled: true,
+                fillColor: const Color(0XFF1E1E1E),
+                labelStyle: TextStyle(color: Colors.white),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: newPasswordController,
+              obscureText: true,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                labelText: "Password Baru",
+                filled: true,
+                fillColor: const Color(0XFF1E1E1E),
+                labelStyle: TextStyle(color: Colors.white),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: confirmController,
+              obscureText: true,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                labelText: "Konfirmasi Password",
+                filled: true,
+                fillColor: const Color(0XFF1E1E1E),
+                labelStyle: TextStyle(color: Colors.white),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+            ),
+            const SizedBox(height: 30),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : _resetPassword,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0XFF015E67),
+                  padding: const EdgeInsets.symmetric(vertical: 18),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
-              ),
-              SizedBox(height: 20),
-
-              TextField(
-                controller: emailController,
-                obscureText: true,
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
-                  labelText: 'Kata sandi',
-                  filled: true,
-                  fillColor: Color(0XFF1E1E1E),
-                  labelStyle: TextStyle(color: Colors.white),
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 15),
-
-              TextField(
-                controller: newPasswordController,
-                obscureText: true,
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
-                  labelText: 'Kata sandi Baru',
-                  filled: true,
-                  fillColor: Color(0XFF1E1E1E),
-                  labelStyle: TextStyle(color: Colors.white),
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 15),
-
-              TextField(
-                controller: confirmPasswordController,
-                obscureText: true,
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
-                  labelText: 'Konfirmasi sandi Baru',
-                  filled: true,
-                  fillColor: Color(0XFF1E1E1E),
-                  labelStyle: TextStyle(color: Colors.white),
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 36),
-
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Kata Sandi Anda telah di atur ulang."),
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text(
+                        "Reset Password",
+                        style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                       ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0XFF015E67),
-                    padding: const EdgeInsets.symmetric(vertical: 18),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-
-                  child: const Text(
-                    "Reset kata sandi",
-                    style: TextStyle(fontSize: 16, color: Colors.white),
-                  ),
-                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
