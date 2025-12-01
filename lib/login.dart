@@ -11,7 +11,7 @@ class LoginPage extends StatelessWidget {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text("Email salah")));
-    } else if (password != "12345678") {
+    } else if (password != "12345") {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text("Password salah!")));
