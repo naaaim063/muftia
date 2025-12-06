@@ -1,24 +1,18 @@
 import 'package:flutter/material.dart';
-import 'login.dart';
+import 'splash_screen.dart';
 
 void main() {
-  runApp(const TaskuyApp());
+  runApp(const MyApp());
 }
 
-class TaskuyApp extends StatelessWidget {
-  const TaskuyApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Taskuy',
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color.fromARGB(255, 38, 145, 211),
-        ),
-      ),
-      home: const LoginPage(),
+      home: SplashScreen(),
     );
   }
 }

@@ -1,173 +1,208 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'beranda.dart';
-import 'reset.dart';
-import 'sign_up.dart';
-import 'auth_local_service.dart';
+import 'login_google_overlay.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+class Login extends StatefulWidget {
+  const Login({super.key});
 
-  void _login(BuildContext context, String email, String password) async {
-    if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Email dan password harus diisi!")),
-      );
-      return;
-    }
+  @override
+  State<Login> createState() => _LoginState();
+}
 
-    // Cek login pakai local storage
-    final success = await AuthLocalService.login(email, password);
-  
-    if (success) {
-      Navigator.pushReplacement(
-        context, 
-        MaterialPageRoute(builder: (context) => const Beranda())
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Email atau password salah!")),
-      );
-    }
-  }
+class _LoginState extends State<Login> {
+  bool _showGoogleLogin = false;
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
-
     return Scaffold(
-      backgroundColor: Color(0XFF161618),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: <Widget>[
-            Image.asset('asset/images/Taskuy.jpeg', height: 200, width: 200),
-            SizedBox(height: 50),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomRight,
+            colors: [Color.fromARGB(255, 4, 111, 205), Color(0xFFFFFFFF)],
+          ),
+        ),
 
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Log in",
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontFamily: 'Poppins',
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-
-            TextField(
-              controller: emailController,
-              keyboardType: TextInputType.emailAddress,
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                filled: true,
-                fillColor: Color(0XFF1E1E1E),
-                labelStyle: TextStyle(color: Colors.white),
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 20),
-
-            TextField(
-              controller: passwordController,
-              obscureText: true,
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
-                labelText: 'Kata sandi',
-                filled: true,
-                fillColor: Color(0XFF1E1E1E),
-                labelStyle: TextStyle(color: Colors.white),
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 15),
-
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ResetPasswordPage(),
-                  ),
-                );
-              },
-
-              child: const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Lupa kata sandi?",
-                  style: TextStyle(
-                    color: Color(0XFF018592),
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.underline,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 60),
-
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0XFF015E67),
-                foregroundColor: Colors.white,
-                minimumSize: Size(500, 54),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6),
-                ),
-              ),
-              onPressed: () {
-                _login(
-                  context,
-                  emailController.text.trim(),
-                  passwordController.text.trim(),
-                );
-              },
-              child: const Text(
-                "Log In",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ),
-
-            SizedBox(height: 20),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const Text(
-                  "Belum punya akun? ",
-                  style: TextStyle(
+        child: Stack(
+          children: [
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset(
+                    "asset/images/user.png",
                     color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                    width: 100,
                   ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SignUpPage(),
-                      ),
-                    );
-                  },
 
-                  child: const Text(
-                    "Sign up",
-                    style: TextStyle(
-                      color: Color(0XFF018592),
-                      fontSize: 16,
+                  const SizedBox(height: 8),
+                  Text(
+                    "Log in",
+                    style: GoogleFonts.kavoon(
+                      color: Colors.white,
+                      fontSize: 36,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-              ],
+
+                  const SizedBox(height: 36),
+
+                  Container(
+                    width: 460,
+                    height: 320,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 48,
+                      vertical: 18,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        begin: Alignment.topRight,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color.fromARGB(255, 4, 111, 205),
+                          Color(0xFFFFFFFF),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: InputDecoration(
+                            labelText: "Email",
+                            filled: true,
+                            fillColor: const Color(0xFFFFFFFF),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        TextField(
+                          controller: _passwordController,
+                          obscureText: true,
+                          keyboardType: TextInputType.text,
+                          decoration: InputDecoration(
+                            labelText: "Password",
+                            filled: true,
+                            fillColor: const Color(0xFFFFFFFF),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 72),
+
+                        Center(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              String email = _emailController.text.trim();
+                              String password = _passwordController.text;
+
+                              if (!email.contains("@gmail.com")) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text("Email salah")),
+                                );
+                                return;
+                              }
+
+                              if (password != "123456") {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("Password salah"),
+                                  ),
+                                );
+                                return;
+                              }
+
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const Beranda(),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFFFFFFF),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 36,
+                                vertical: 18,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                            child: const Text(
+                              "Login",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 6),
+
+                  const Text("Belum punya akun? daftar dengan"),
+
+                  const SizedBox(height: 12),
+
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 28,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _showGoogleLogin = true;
+                          });
+                        },
+                        child: Image.asset(
+                          "asset/images/google-removebg-preview.png",
+                          width: 28,
+                        ),
+                      ),
+
+                      Image.asset(
+                        "asset/images/facebook-removebg-preview.png",
+                        width: 32,
+                      ),
+                      Image.asset(
+                        "asset/images/apple-removebg-preview.png",
+                        width: 24,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
+
+            if (_showGoogleLogin)
+              LoginGoogleOverlay(
+                onClose: () {
+                  setState(() {
+                    _showGoogleLogin = false;
+                  });
+                },
+              ),
           ],
         ),
       ),
